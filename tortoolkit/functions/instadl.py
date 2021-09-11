@@ -186,7 +186,7 @@ async def _insta_post_downloader(message):
         )
         await asyncio.sleep(2)
 
-    p = r"^https:\/\/www\.instagram\.com\/(p|tv|reel)\/([A-Za-z0-9\-_]*)\/(\?igshid=[a-zA-Z0-9]*)?$"
+    p = r"^https:\/\/www\.instagram\.com\/(p|tv|reel)\/([A-Za-z0-9\-_]*)\/(\?igshid=[a-zA-Z0-9]*)\/(\?utm_medium=[a-zA-Z0-9]*)?$"
     match = re.search(p, omess.raw_text)
     print(omess.raw_text)
     if False:
