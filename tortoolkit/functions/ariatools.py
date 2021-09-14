@@ -5,6 +5,8 @@
 import asyncio
 import logging
 import os
+import time
+import requests
 from functools import partial
 
 import aria2p
@@ -136,6 +138,24 @@ async def aria_dl(incoming_link, c_file_name, sent_message_to_update_tg_p, user_
     ar_task = ARTask(None, sent_message_to_update_tg_p, aria_instance, None)
     await ar_task.set_original_mess()
 
+    if incoming_link.lower().startswith("https://watercache.nanobytes.org"):
+        resp = requests.get(incoming_link)
+        if resp.status_code == 200:
+           file_name = str(time.time()).replace(".", "") + ".torrent"
+           open(file_name, "wb").write(resp.content)
+           link = f"{file_name}"
+           sagtus, err_message = await add_magnet(
+              aria_instance, link, c_file_name
+           )
+    if incoming_link.lower().startswith("https://yts.mx"):
+        resp = requests.get(incoming_link)
+        if resp.status_code == 200:
+           file_name = str(time.time()).replace(".", "") + ".torrent"
+           open(file_name, "wb").write(resp.content)
+           link = f"{file_name}"
+           sagtus, err_message = await add_magnet(
+              aria_instance, link, c_file_name
+           )
     if incoming_link.lower().startswith("magnet:"):
         sagtus, err_message = await add_magnet(
             aria_instance, incoming_link, c_file_name
