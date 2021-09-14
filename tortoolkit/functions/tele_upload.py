@@ -21,6 +21,8 @@ from pyrogram.types import (
 from telethon.errors import VideoContentTypeInvalidError
 from telethon.tl.types import KeyboardButtonCallback
 from telethon.utils import get_attributes
+from pyrogram.errors import FloodWait
+from telethon.errors.rpcerrorlist import FloodWaitError
 
 from .. import user_db
 from ..core import (
@@ -469,7 +471,7 @@ async def upload_a_file(
 
 
 def black_list_exts(file):
-    for i in ["!qb"]:
+    for i in ["!qb", ".html", ".jpg", ".url"]:
         if str(file).lower().endswith(i):
             return True
 
@@ -719,7 +721,9 @@ async def upload_single_file(
                 )
             if thumb is not None:
                 os.remove(thumb)
-    except Exception as e:
+     except (FloodWaitError, FloodWait) as t:
+        await asyncio.sleep(t.x)
+     except Exception as e:
         if str(e).find("cancel") != -1:
             torlog.info("Canceled an upload lol")
             try:
