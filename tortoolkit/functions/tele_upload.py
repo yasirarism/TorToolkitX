@@ -472,7 +472,7 @@ async def upload_a_file(
 
 
 def black_list_exts(file):
-    for i in ["!qb", ".html", ".jpg", ".url", "srt", ".nfo", ".txt", ".exe"]:
+    for i in ["!qb", ".html", ".jpg", ".url", ".nfo", ".txt"]:
         if str(file).lower().endswith(i):
             return True
 
