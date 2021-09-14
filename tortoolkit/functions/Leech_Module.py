@@ -233,8 +233,8 @@ async def check_link(msg, rclone=False, is_zip=False, extract=False, prev_msg=No
 
             await clear_stuff(dl_path)
 
-        elif msg.raw_text.lower().endswith(".torrent"):
-            rmess = await omess.reply("Downloading the torrent file.")
+        elif msg.raw_text.lower().endswith(".torrent") or msg.raw_text.lower().startswith("https://yts.mx") or msg.raw_text.lower().startswith("https://watercache.nanobytes.org"):
+            rmess = await omess.reply("Downloading ...")
 
             # TODO do something to de register the torrents - done
             path = ""
