@@ -314,7 +314,6 @@ async def upload_a_file(
         )
         buts = [KeyboardButtonCallback("Cancel upload.", data.encode("UTF-8"))]
         msg = await message.reply("**Uploading:** `{}`".format(file_name), buttons=buts)
-
     else:
         msg = message
 
@@ -561,7 +560,8 @@ async def upload_single_file(
                 "**Starting upload of** `{}`".format(os.path.basename(path)),
                 reply_markup=markup,
             )
-
+            if black_list_exts(path):
+                return (False, "Blacklist File Format!!")
             if queue is not None:
                 torlog.info(f"Waiting for the worker here for {file_name}")
                 message_for_progress_display = await message_for_progress_display.edit(
