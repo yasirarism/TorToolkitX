@@ -723,8 +723,6 @@ async def upload_single_file(
                 )
             if thumb is not None:
                 os.remove(thumb)
-     except (FloodWaitError, FloodWait) as t:
-        await asyncio.sleep(t.x)
      except Exception as e:
         if str(e).find("cancel") != -1:
             torlog.info("Canceled an upload lol")
