@@ -511,7 +511,7 @@ async def upload_single_file(
         force_docs = get_val("FORCE_DOCUMENTS")
 
     # Avoid Flood in Express
-    await asyncio.sleep(15)
+    await asyncio.sleep(7)
 
     metadata = extractMetadata(createParser(path))
 
