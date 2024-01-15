@@ -75,10 +75,7 @@ class VarHolder:
         elif variable in BOOLS:
             if envval:
                 if not isinstance(val, bool):
-                    if "true" in envval.lower():
-                        val = True
-                    else:
-                        val = False
+                    val = "true" in envval.lower()
             else:
                 val = None
         else:
@@ -92,11 +89,9 @@ class VarHolder:
 
         if val is None:
             torlog.error(
-                "The variable was not found in either the constants, environment or database. Variable is :- {}".format(
-                    variable
-                )
+                f"The variable was not found in either the constants, environment or database. Variable is :- {variable}"
             )
-            # raise Exception("The variable was not found in either the constants, environment or database. Variable is :- {}".format(variable))
+                # raise Exception("The variable was not found in either the constants, environment or database. Variable is :- {}".format(variable))
 
         if isinstance(val, str):
             val = val.strip()

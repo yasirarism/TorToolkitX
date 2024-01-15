@@ -21,7 +21,7 @@ def get_caption(post: Post) -> str:
     caption = post.caption
     replace = '<a href="https://instagram.com/{}/">{}</a>'
     for mention in post.caption_mentions:
-        men = "@" + mention
+        men = f"@{mention}"
         val = replace.format(mention, men)
         caption = caption.replace(men, val)
     header = f"♥️<code>{post.likes}</code>  💬<code>{post.comments}</code>"
@@ -33,39 +33,35 @@ def get_caption(post: Post) -> str:
 
 async def upload_to_tg(
     message, dirname: str, post: Post, sender_id: int
-) -> None:  # pylint: disable=R0912
+) -> None:    # pylint: disable=R0912
     """uploads downloaded post from local to telegram servers"""
-    pto = (".jpg", ".jpeg", ".png", ".bmp")
     vdo = (".mkv", ".mp4", ".webm")
     paths = []
+    pto = (".jpg", ".jpeg", ".png", ".bmp")
     if post.typename == "GraphSidecar":
         # upload media group
         captioned = False
         caption = ""
         media = []
         for path in natsorted(os.listdir(dirname)):
-            ab_path = dirname + "/" + path
+            ab_path = f"{dirname}/{path}"
             paths.append(ab_path)
             if str(path).endswith(pto):
-                if captioned:
-                    media.append(ab_path)
-                else:
-                    media.append(ab_path)
+                if not captioned:
                     caption = get_caption(post)[:1023]
                     caption += (
                         f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n"
                     )
                     captioned = True
+                media.append(ab_path)
             elif str(path).endswith(vdo):
-                if captioned:
-                    media.append(ab_path)
-                else:
-                    media.append(ab_path)
+                if not captioned:
                     caption = get_caption(post)[:1023]
                     caption += (
                         f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n"
                     )
                     captioned = True
+                media.append(ab_path)
         if media:
             await message.client.send_file(
                 message.chat_id,
@@ -80,13 +76,12 @@ async def upload_to_tg(
         # upload a photo
         for path in natsorted(os.listdir(dirname)):
             if str(path).endswith(pto):
-                ab_path = dirname + "/" + path
+                ab_path = f"{dirname}/{path}"
                 paths.append(ab_path)
                 await message.client.send_file(
                     message.chat_id,
                     ab_path,
-                    caption=get_caption(post)[:1023]
-                    + f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
+                    caption=f"{get_caption(post)[:1023]}\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
                     parse_mode="html",
                     reply_to=message.id,
                 )
@@ -95,7 +90,7 @@ async def upload_to_tg(
         # upload a video
         for path in natsorted(os.listdir(dirname)):
             if str(path).endswith(vdo):
-                ab_path = dirname + "/" + path
+                ab_path = f"{dirname}/{path}"
                 paths.append(ab_path)
                 thumb = await get_thumbnail(ab_path)
 
@@ -103,8 +98,7 @@ async def upload_to_tg(
                     entity=message.chat_id,
                     file=ab_path,
                     thumb=thumb,
-                    caption=get_caption(post)[:1023]
-                    + f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
+                    caption=f"{get_caption(post)[:1023]}\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
                     parse_mode="html",
                     reply_to=message.id,
                 )
@@ -161,11 +155,10 @@ async def _insta_post_downloader(message):
         save_metadata=False,
         compress_json=False,
     )
-    if get_val("INSTA_UNAME") is not None and get_val("INSTA_PASS") is not None:
-        login = True
-    else:
-        login = False
-
+    login = (
+        get_val("INSTA_UNAME") is not None
+        and get_val("INSTA_PASS") is not None
+    )
     if login:
         try: 
             insta.login(get_val("INSTA_UNAME"), get_val("INSTA_PASS"))
@@ -176,7 +169,7 @@ async def _insta_post_downloader(message):
             ConnectionException,
             TooManyRequestsException,
         ) as e:
-            await message.edit(f"**InstaDL ERROR:** " + str(e))
+            await message.edit(f"**InstaDL ERROR:** {str(e)}")
             torlog.warning(str(e))
     else:
         torlog.info("Insta-DL running without credentials")
@@ -189,10 +182,7 @@ async def _insta_post_downloader(message):
     p = r"^https:\/\/www\.instagram\.com\/(p|tv|reel)\/([A-Za-z0-9\-_]*)\/(\?igshid=[a-zA-Z0-9]*)\/(\?utm_medium=[a-zA-Z0-9]*)?$"
     match = re.search(p, omess.raw_text)
     print(omess.raw_text)
-    if False:
-        # have plans here
-        pass
-    elif match:
+    if match:
         dtypes = {"p": "POST", "tv": "IGTV", "reel": "REELS"}
         d_t = dtypes.get(match.group(1))
         if not d_t:

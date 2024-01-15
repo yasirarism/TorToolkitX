@@ -40,12 +40,15 @@ async def progress(
 
         progress = "[{0}{1}] \nP: {2}%\n".format(
             "".join(
-                [get_val("COMPLETED_STR") for i in range(math.floor(percentage / 10))]
+                [
+                    get_val("COMPLETED_STR")
+                    for _ in range(math.floor(percentage / 10))
+                ]
             ),
             "".join(
                 [
                     get_val("REMAINING_STR")
-                    for i in range(10 - math.floor(percentage / 10))
+                    for _ in range(10 - math.floor(percentage / 10))
                 ]
             ),
             round(percentage, 2),
@@ -60,15 +63,9 @@ async def progress(
         )
         try:
             if not message.photo:
-                await message.edit(
-                    text="**Uploading:** `{}`\n{}".format(file_name, tmp)
-                )
+                await message.edit(text=f"**Uploading:** `{file_name}`\n{tmp}")
             else:
-                await message.edit(
-                    caption="**Uploading:** `{}`\n{}".format(file_name, tmp)
-                )
+                await message.edit(caption=f"**Uploading:** `{file_name}`\n{tmp}")
         except Exception as e:
             logging.error(e)
-        return
-    else:
-        return
+    return

@@ -33,9 +33,7 @@ def get_command(command):
     if cmd is None:
         torlog.debug(f"None Command Error occured for command {command}")
         raise Exception(
-            "The command was not found in either the constants, environment or database. Command is :- {}".format(
-                command
-            )
+            f"The command was not found in either the constants, environment or database. Command is :- {command}"
         )
 
     cmd = cmd.strip("/")
